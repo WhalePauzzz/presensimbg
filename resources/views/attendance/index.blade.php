@@ -1,86 +1,26 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1 class="my-4">Daftar Kehadiran</h1>
-    
+<div class="max-w-7xl mx-auto p-6">
+    <h1 class="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Daftar Kehadiran</h1>
+
     @if (session('success'))
-        <div class="alert alert-success">
+        <div class="mb-4 p-4 rounded bg-green-100 text-green-700 dark:bg-green-200">
             {{ session('success') }}
         </div>
     @endif
 
-    <a href="{{ route('attendance.create') }}" class="btn btn-primary mb-3">Tambah Kehadiran</a>
+    <a href="{{ route('attendance.create') }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded mb-6">
+        + Tambah Kehadiran
+    </a>
 
-    <div class="row">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         @foreach($kelasList as $kelas)
-            <div class="col-md-4">
-                <div class="card mb-3 kelas-card" data-kelas-id="{{ $kelas->id_kelas }}">
-                    <div class="card-body">
-                        <h5 class="card-title">Kelas: {{ $kelas->kelas }}</h5>
-                        <p class="card-text">Klik untuk melihat absensi</p>
-                    </div>
-                </div>
-            </div>
+            <a href="{{ route('attendance.show', $kelas->id) }}" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 block hover:ring-2 ring-blue-400 transition">
+                <h5 class="text-lg font-semibold text-gray-800 dark:text-white">Kelas: {{ $kelas->kelas }}</h5>
+                <p class="text-gray-600 dark:text-gray-300">Klik untuk melihat absensi</p>
+            </a>
         @endforeach
     </div>
-
-    <div id="attendance-list" class="mt-4" style="display: none;">
-        <h2 class="mb-3">Daftar Kehadiran Kelas <span id="kelas-name"></span></h2>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama Siswa</th>
-                    <th>Tanggal</th>
-                    <th>Status</th>
-                    <th>Foto</th>
-                </tr>
-            </thead>
-            <tbody id="attendance-body">
-            </tbody>
-        </table>
-    </div>
 </div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('.kelas-card').click(function() {
-            let kelasId = $(this).data('kelas-id');
-            let kelasName = $(this).find('.card-title').text();
-            
-            $.ajax({
-                url: "{{ url('/attendance/getByClass') }}/" + kelasId,
-                method: "GET",
-                success: function(response) {
-                    $('#attendance-body').html('');
-                    $('#kelas-name').text(kelasName);
-                    
-                    if (response.length > 0) {
-                        $.each(response, function(index, attendance) {
-                            let foto = attendance.foto_izin ? 
-                                `<a href="/storage/${attendance.foto_izin}" target="_blank" class="btn btn-info btn-sm">Lihat Foto</a>` :
-                                '<img src="/storage/noimage.png" class="img-thumbnail" width="50">';
-
-                            $('#attendance-body').append(`
-                                <tr>
-                                    <td>${index + 1}</td>
-                                    <td>${attendance.student.nm_siswa}</td>
-                                    <td>${attendance.date}</td>
-                                    <td>${attendance.keterangan.charAt(0).toUpperCase() + attendance.keterangan.slice(1)}</td>
-                                    <td>${foto}</td>
-                                </tr>
-                            `);
-                        });
-                    } else {
-                        $('#attendance-body').append('<tr><td colspan="5" class="text-center">Tidak ada data absensi</td></tr>');
-                    }
-                    
-                    $('#attendance-list').show();
-                }
-            });
-        });
-    });
-</script>
 @endsection

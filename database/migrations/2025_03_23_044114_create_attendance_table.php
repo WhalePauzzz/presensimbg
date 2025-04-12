@@ -13,13 +13,11 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_siswa');
             $table->string('foto_izin')->nullable();
             $table->date('date');
             $table->text('keterangan');
             $table->timestamps();
-            
-            $table->foreign('id_siswa')->references('id_siswa')->on('students')->onDelete('cascade');
+            $table->foreignId('id_siswa')->constrained('students')->onDelete('cascade');
         });
     }
 

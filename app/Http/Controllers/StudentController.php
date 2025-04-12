@@ -16,6 +16,12 @@ class StudentController extends Controller
         return view('dashboard', compact('students', 'kelasList'));
     }
 
+    public function show($id)
+    {
+        $kelas = Classes::with('students')->findOrFail($id);
+        return view('student.show', compact('kelas'));
+    }
+
 
     public function getByClass($id_kelas)
     {
@@ -27,14 +33,14 @@ class StudentController extends Controller
     public function create()
     {
         $kelasList = Classes::all(); // Ambil semua kelas untuk dropdown
-        return view('students.create', compact('kelasList'));
+        return view('student.create', compact('kelasList'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'nm_siswa' => 'required|string|max:255',
-            'id_kelas' => 'required|exists:classes,id_kelas', // Pastikan kelas ada
+            'id_kelas' => 'required|exists:classes,id', // Pastikan kelas ada
         ]);
 
         Student::create([
@@ -42,6 +48,6 @@ class StudentController extends Controller
             'id_kelas' => $request->id_kelas,
         ]);
 
-        return redirect()->route('students.create')->with('success', 'Siswa berhasil ditambahkan!');
+        return redirect()->route('dashboard')->with('success', 'Siswa berhasil ditambahkan!');
     }
 }

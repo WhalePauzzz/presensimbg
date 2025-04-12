@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
-use App\Models\classes;
+use App\Models\Classes;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -12,16 +12,29 @@ class AttendanceController extends Controller
 {
     public function index()
     {
-        $kelasList = classes::all(); // Ambil semua kelas
+        $kelasList = Classes::all(); // Ambil semua kelas
         $attendances = Attendance::with('student.classes')->latest()->get();
         return view('attendance.index', compact('attendances', 'kelasList'));
     }
 
-    public function getByClass($id_kelas)
+    public function show($id)
+    {
+        $kelas = Classes::findOrFail($id);
+
+        $attendances = Attendance::with('student')
+            ->whereHas('student', function ($query) use ($id) {
+                $query->where('id_kelas', $id); // ini karena student punya field 'id_kelas'
+            })
+            ->get();
+
+        return view('attendance.show', compact('kelas', 'attendances'));
+    }
+
+    public function getByClass($id)
     {
         $attendances = Attendance::with('student.classes')
-            ->whereHas('student', function ($query) use ($id_kelas) {
-                $query->where('id_kelas', $id_kelas);
+            ->whereHas('student', function ($query) use ($id) {
+                $query->where('id_kelas', $id);
             })->get();
 
         return response()->json($attendances);
@@ -30,19 +43,18 @@ class AttendanceController extends Controller
 
     public function create(Request $request)
     {
-        $kelasList = classes::all();
+        $kelasList = Classes::all();
         $students = [];
 
         if ($request->has('kelas') && $request->kelas != '') {
             $students = Student::where('id_kelas', $request->kelas)->get();
         }
-
+        
         return view('attendance.create', [
             'kelasList' => $kelasList,
             'students' => $students,
         ]);
     }
-
     public function getStudentsByClass($id_kelas)
     {
         $students = Student::where('id_kelas', $id_kelas)->get();
@@ -51,17 +63,25 @@ class AttendanceController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all());
+
         // Validasi input
         $request->validate([
             'attendance.*.date' => 'required|date',
             'attendance.*.keterangan' => 'required|in:present,absent',
             'attendance.*.foto_izin' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ],
+    
+        $messages = [
+            'attendance.*.date.required' => 'Tanggal wajib diisi.',
+            'attendance.*.keterangan.required' => 'Keterangan wajib dipilih.',
+            'attendance.*.foto_izin.image' => 'File harus berupa gambar.',
+            'attendance.*.foto_izin.max' => 'Ukuran gambar maksimal 2MB.',
         ]);
 
         foreach ($request->attendance as $studentId => $attendanceData) {
-            $fotoIzinPath = 'noimage.png'; // Default jika tidak ada gambar
-
-            // Jika ada file yang diupload, ganti "noimage.png" dengan file baru
+            $fotoIzinPath = 'noimage.png';
+        
             if ($request->hasFile("attendance.$studentId.foto_izin")) {
                 $fotoIzinPath = $attendanceData['foto_izin']->storeAs(
                     'attendance_photos',
@@ -69,8 +89,7 @@ class AttendanceController extends Controller
                     'public'
                 );
             }
-
-            // Simpan atau update absensi siswa
+        
             Attendance::updateOrCreate(
                 [
                     'id_siswa' => $studentId,
@@ -78,11 +97,13 @@ class AttendanceController extends Controller
                 ],
                 [
                     'keterangan' => $attendanceData['keterangan'],
-                    'foto_izin' => $fotoIzinPath, // Akan tetap "noimage.png" jika tidak ada file
+                    'foto_izin' => $fotoIzinPath,
                 ]
             );
-        }
+        }        
 
-        return redirect()->route('attendance.index')->with('success', 'Absensi berhasil disimpan!');
+        // Redirect to attendance.index with the selected class
+        return redirect()->route('attendance.index', ['kelas' => $request->kelas])
+                         ->with('success', 'Absensi berhasil disimpan.');
     }
 }

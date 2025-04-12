@@ -1,109 +1,107 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1>Input Absensi</h1>
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <h1 class="text-2xl font-bold mb-6">Input Absensi</h1>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    <!-- Pilih Kelas -->
-    <form method="GET" class="mb-4" action="{{ route('attendance.create') }}">
-        <div class="form-group">
-            <label for="filter_kelas">Pilih Kelas</label>
-            <select name="kelas" id="filter_kelas" class="form-control" onchange="this.form.submit()">
-                <option value="">-- Pilih Kelas --</option>
-                @foreach($kelasList as $kelas)
-                    <option value="{{ $kelas->id_kelas }}" {{ request('kelas') == $kelas->id_kelas ? 'selected' : '' }}>
-                        {{ $kelas->kelas }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-    </form>
-
-    <!-- Hanya tampilkan form jika kelas sudah dipilih dan ada siswa -->
-    @if (!empty($students) && count($students) > 0)
-        <form action="{{ route('attendance.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Nama</th>
-                        <th>Kelas</th>
-                        <th>Tanggal</th>
-                        <th>Status</th>
-                        <th>Foto</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($students as $student)
-                        <tr>
-                            <td>{{ $student->nm_siswa }}</td>
-                            <td>{{ $student->classes->kelas ?? 'Tidak ada kelas' }}</td>
-
-                            <!-- Input Tanggal -->
-                            <td>
-                                <input type="date" name="attendance[{{ $student->id_siswa }}][date]" class="form-control attendance-date" value="{{ date('Y-m-d') }}">
-                            </td>
-
-                            <!-- Dropdown Kehadiran -->
-                            <td>
-                                <select name="attendance[{{ $student->id_siswa }}][keterangan]" class="form-control attendance-keterangan" onchange="togglePhotoInput(this)">
-                                    <option value="present">Hadir</option>
-                                    <option value="absent">Absen</option>
-                                </select>
-                            </td>
-
-                            <!-- Input Foto -->
-                            <td>
-                                <input type="file" name="attendance[{{ $student->id_siswa }}][foto_izin]" class="form-control attendance-photo" disabled>
-                            </td>
-                        </tr>
+        <!-- Pilih Kelas -->
+        <form method="GET" class="mb-6" action="{{ route('attendance.create') }}">
+            <div class="mb-4">
+                <label for="filter_kelas" class="block text-sm font-medium text-gray-700 mb-1">Pilih Kelas</label>
+                <select name="kelas" id="filter_kelas" class="w-full ..." onchange="this.form.submit()">
+                    <option value="">-- Pilih Kelas --</option>
+                    @foreach ($kelasList as $kelas)
+                        <option value="{{ $kelas->id }}" {{ request('kelas') == $kelas->id ? 'selected' : '' }}>
+                            {{ $kelas->kelas }}
+                        </option>
                     @endforeach
-                </tbody>
-            </table>
-
-            <button type="submit" class="btn btn-primary">Simpan Absensi</button>
+                </select>
+            </div>
         </form>
-    @else
-        <p>Silakan pilih kelas terlebih dahulu untuk mengisi absensi.</p>
-    @endif
-</div>
 
-<!-- Script untuk mengisi semua tanggal otomatis dan mengatur input foto -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Ambil semua elemen dropdown dan input foto
-        const dateInputs = document.querySelectorAll('.attendance-date');
-        const keteranganSelects = document.querySelectorAll('.attendance-keterangan');
+        @if (!empty($students) && count($students) > 0)
+            <form action="{{ route('attendance.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" name="kelas" value="{{ request('kelas') }}">
 
-        // Event listener untuk mengatur semua tanggal seragam
-        dateInputs.forEach(input => {
-            input.addEventListener('change', function() {
-                const newDate = this.value;
-                dateInputs.forEach(otherInput => {
-                    otherInput.value = newDate;
+                <table class="min-w-full table-auto border border-gray-300">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="border px-4 py-2">Nama</th>
+                            <th class="border px-4 py-2">Kelas</th>
+                            <th class="border px-4 py-2">Tanggal</th>
+                            <th class="border px-4 py-2">Status</th>
+                            <th class="border px-4 py-2">Foto Izin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($students as $student)
+                            <tr class="bg-white hover:bg-gray-50">
+                                <td class="border px-4 py-2">{{ $student->nm_siswa }}</td>
+                                <td class="border px-4 py-2">{{ $student->classes->kelas ?? '-' }}</td>
+                                <td class="border px-4 py-2">
+                                    <input type="hidden" name="attendance[{{ $student->id }}][id_siswa]"
+                                        value="{{ $student->id_siswa }}">
+                                    <input type="date" name="attendance[{{ $student->id }}][date]"
+                                        value="{{ date('Y-m-d') }}" class="..." required>
+                                </td>
+                                <td class="border px-4 py-2">
+                                    <select name="attendance[{{ $student->id }}][keterangan]" class="..." required onchange="togglePhotoInput(this)">
+                                        <option value="present" selected>Hadir</option>
+                                        <option value="absent">Absen</option>
+                                    </select>
+                                </td>
+                                <td class="border px-4 py-2">
+                                    <input type="file" name="attendance[{{ $student->id }}][foto_izin]"
+                                        class="w-full border rounded px-2 py-1 attendance-photo" disabled>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+                <div class="mt-6">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded">
+                        Simpan Absensi
+                    </button>
+                </div>
+            </form>
+        @else
+            <p class="text-gray-600">Silakan pilih kelas terlebih dahulu untuk mengisi absensi.</p>
+        @endif
+
+        @if ($errors->any())
+            <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                <strong>Terjadi kesalahan:</strong>
+                <ul class="mt-2 list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+    </div>
+
+    <script>
+        function togglePhotoInput(select) {
+            const photoInput = select.closest('tr').querySelector('.attendance-photo');
+            if (select.value === 'absent') {
+                photoInput.disabled = false;
+            } else {
+                photoInput.disabled = true;
+                photoInput.value = '';
+            }
+        }
+
+        // Set default tanggal untuk semua input saat satu diubah
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInputs = document.querySelectorAll('input[type="date"]');
+            dateInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const value = this.value;
+                    dateInputs.forEach(i => i.value = value);
                 });
             });
         });
-
-        // Panggil fungsi togglePhotoInput saat halaman pertama kali dimuat
-        keteranganSelects.forEach(select => {
-            togglePhotoInput(select);
-        });
-    });
-
-    function togglePhotoInput(select) {
-        const photoInput = select.closest('tr').querySelector('.attendance-photo');
-        if (select.value === 'absent') {
-            photoInput.disabled = false;
-        } else {
-            photoInput.disabled = true;
-            photoInput.value = ''; // Hapus file jika berubah dari absent ke hadir
-        }
-    }
-</script>
+    </script>
 @endsection

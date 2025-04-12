@@ -1,87 +1,32 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-
-        <div class="container">
-            <h1 class="my-4">Daftar Siswa</h1>
-
-            @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
-            @endif
-
-            <div class="mb-4">
-                <a href="{{ route('students.create') }}" class="btn btn-success">Tambah Siswa</a>
-            </div>
-
-            <div class="row">
-                @foreach($kelasList as $kelas)
-                <div class="col-md-4">
-                    <div class="card mb-3 kelas-card" data-kelas-id="{{ $kelas->id_kelas }}">
-                        <div class="card-body">
-                            <h5 class="card-title">Kelas: {{ $kelas->kelas }}</h5>
-                            <p class="card-text">Klik untuk melihat siswa</p>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-
-            <div id="student-list" class="mt-4" style="display: none;">
-                <h2 class="mb-3">Daftar Siswa Kelas <span id="kelas-name"></span></h2>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Siswa</th>
-                            <th>Jurusan</th>
-                        </tr>
-                    </thead>
-                    <tbody id="student-body">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-            $(document).ready(function() {
-                $('.kelas-card').click(function() {
-                    let kelasId = $(this).data('kelas-id');
-                    let kelasName = $(this).find('.card-title').text();
-
-                    $.ajax({
-                        url: "{{ url('/students/getByClass') }}/" + kelasId,
-                        method: "GET",
-                        success: function(response) {
-                            $('#student-body').html('');
-                            $('#kelas-name').text(kelasName);
-
-                            if (response.length > 0) {
-                                $.each(response, function(index, student) {
-                                    $('#student-body').append(`
-                                <tr>
-                                    <td>${index + 1}</td>
-                                    <td>${student.nm_siswa}</td>
-                                    <td>${student.classes.jurusan ?? 'Tidak ada jurusan'}</td>
-                                </tr>
-                            `);
-                                });
-                            } else {
-                                $('#student-body').append('<tr><td colspan="3" class="text-center">Tidak ada siswa</td></tr>');
-                            }
-
-                            $('#student-list').show();
-                        }
-                    });
-                });
-            });
-        </script>
+@section('content')
+<div class="max-w-6xl mx-auto px-4 py-6">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-semibold">Dashboard</h1>
+        <a href="{{ route('students.create') }}"
+           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow">
+            + Tambah Siswa
+        </a>
     </div>
-</x-app-layout>
+
+    @if(session('success'))
+        <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @forelse ($kelasList as $kelas)
+            <a href="{{ route('students.show', $kelas->id) }}" class="block bg-white shadow rounded-xl p-6 hover:shadow-lg transition">
+                <h2 class="text-xl font-semibold text-gray-800 mb-2">{{ $kelas->kelas }} - {{ $kelas->jurusan }}</h2>
+                <p class="text-sm text-gray-600">Jumlah Siswa: {{ $kelas->students->count() }}</p>
+            </a>
+        @empty
+            <div class="col-span-full text-center text-gray-500">
+                Belum ada data kelas.
+            </div>
+        @endforelse
+    </div>
+</div>
+@endsection

@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class classes extends Model
+class Classes extends Model
 {
     use HasFactory;
 
     protected $table = 'classes'; 
 
-    protected $primaryKey = 'id_kelas'; 
+    protected $primaryKey = 'id'; 
     
     protected $fillable = ['kelas', 'jurusan'];
 
@@ -19,11 +19,11 @@ class classes extends Model
 
     public function mbgs()
     {
-        return $this->hasMany(Mbg::class, 'id_kelas', 'id_kelas');
+        return $this->hasMany(Mbg::class, 'id_kelas', 'id');
     }
 
     public function students()
     {
-        return $this->hasMany(Student::class, 'id_kelas', 'id_kelas');
+        return $this->hasMany(Student::class, 'id_kelas', 'id');
     }
 }

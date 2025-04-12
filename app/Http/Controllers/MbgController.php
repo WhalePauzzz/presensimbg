@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Mbg;
-use App\Models\classes;
+use App\Models\Classes;
 use App\Models\Attendance;
 use App\Models\Student;
 use Illuminate\Support\Facades\Storage;
@@ -13,15 +13,12 @@ class MbgController extends Controller
 {
     public function index()
     {
-        $classes = Classes::all(); // Ambil semua kelas
-        $mbgs = Mbg::where('date', now()->toDateString())->get(); // Data MBG hari ini
-
-        // Ambil semua tanggal unik dari tabel MBG
+        $classes = Classes::all();
+        $mbgs = Mbg::where('date', now()->toDateString())->get();
         $tanggalList = Mbg::select('date')->distinct()->orderBy('date', 'desc')->pluck('date');
-        
+
         return view('mbgs.index', compact('classes', 'mbgs', 'tanggalList'));
     }
-
 
     public function create()
     {
@@ -34,7 +31,6 @@ class MbgController extends Controller
         $mbg = Mbg::findOrFail($id);
         return view('mbgs.inputFoto', compact('mbg'));
     }
-
 
     public function storeFoto(Request $request, $id)
     {
@@ -55,12 +51,12 @@ class MbgController extends Controller
     public function updateStatus(Request $request)
     {
         $request->validate([
-            'id' => 'required|exists:mbgs,id_mbg',
+            'id' => 'required|exists:mbgs,id',
             'field' => 'required|in:diambil,dikembalikan',
             'status' => 'required|boolean',
         ]);
 
-        $mbg = Mbg::findOrFail($request->id_mbg);
+        $mbg = Mbg::findOrFail($request->id);
         $mbg->update([$request->field => $request->status]);
 
         return response()->json(['message' => 'Status berhasil diperbarui']);
@@ -72,18 +68,17 @@ class MbgController extends Controller
             'date' => 'required|date',
         ]);
 
-        $classes = Classes::all(); // Ambil semua kelas
+        $classes = Classes::all();
 
         foreach ($classes as $class) {
-            $total_siswa = Student::where('id_kelas', $class->id_kelas)->count();
+            $total_siswa = Student::where('id_kelas', $class->id)->count();
             $total_hadir = Attendance::where('date', $request->date)
-                ->whereHas('student', function ($query) use ($class) {
-                    $query->where('id_kelas', $class->id_kelas);
-                })->count();
+                ->whereIn('id_siswa', Student::where('id_kelas', $class->id)->pluck('id'))
+                ->count();
 
             Mbg::updateOrCreate(
                 [
-                    'id_kelas' => $class->id_kelas,
+                    'id_kelas' => $class->id,
                     'date' => $request->date,
                 ],
                 [
@@ -104,18 +99,18 @@ class MbgController extends Controller
             'date' => 'required|date',
         ]);
 
-        $classes = Classes::all(); // Ambil semua kelas
+        $classes = Classes::all();
 
         foreach ($classes as $class) {
-            $total_siswa = Student::where('id_kelas', $class->id_kelas)->count();
+            $total_siswa = Student::where('id_kelas', $class->id)->count();
             $total_hadir = Attendance::where('date', $request->date)
                 ->whereHas('student', function ($query) use ($class) {
-                    $query->where('id_kelas', $class->id_kelas);
+                    $query->where('id_kelas', $class->id);
                 })->count();
 
             Mbg::updateOrCreate(
                 [
-                    'id_kelas' => $class->id_kelas,
+                    'id_kelas' => $class->id,
                     'date' => $request->date,
                 ],
                 [
@@ -129,5 +124,4 @@ class MbgController extends Controller
 
         return redirect()->route('mbgs.index')->with('success', 'Data berhasil diperbarui untuk semua kelas.');
     }
-
 }
