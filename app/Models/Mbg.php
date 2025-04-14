@@ -10,7 +10,7 @@ class Mbg extends Model
     use HasFactory;
 
     protected $table = 'mbgs';
-    protected $primaryKey = 'id_mbg';
+    protected $primaryKey = 'id';
     protected $fillable = [
         'id_kelas', 'date', 'foto', 'total_hadir', 
         'diambil', 'dikembalikan', 'total_siswa'

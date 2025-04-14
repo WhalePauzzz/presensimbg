@@ -71,10 +71,17 @@ class MbgController extends Controller
         $classes = Classes::all();
 
         foreach ($classes as $class) {
-            $total_siswa = Student::where('id_kelas', $class->id)->count();
-            $total_hadir = Attendance::where('date', $request->date)
-                ->whereIn('id_siswa', Student::where('id_kelas', $class->id)->pluck('id'))
+            $studentsInClass = Student::where('id_kelas', $class->id)->pluck('id');
+
+            $total_siswa = count($studentsInClass);
+
+            $absentCount = Attendance::where('date', $request->date)
+                ->whereIn('id_siswa', $studentsInClass)
+                ->where('keterangan', 'absent')
                 ->count();
+
+            $total_hadir = $total_siswa - $absentCount;
+
 
             Mbg::updateOrCreate(
                 [
@@ -102,11 +109,18 @@ class MbgController extends Controller
         $classes = Classes::all();
 
         foreach ($classes as $class) {
-            $total_siswa = Student::where('id_kelas', $class->id)->count();
-            $total_hadir = Attendance::where('date', $request->date)
-                ->whereHas('student', function ($query) use ($class) {
-                    $query->where('id_kelas', $class->id);
-                })->count();
+            $studentsInClass = Student::where('id_kelas', $class->id)->pluck('id');
+
+            $total_siswa = count($studentsInClass);
+
+            $absentCount = Attendance::where('date', $request->date)
+                ->whereIn('id_siswa', $studentsInClass)
+                ->where('keterangan', 'absent')
+                ->count();
+
+            $total_hadir = $total_siswa - $absentCount;
+
+
 
             Mbg::updateOrCreate(
                 [

@@ -3,12 +3,12 @@
 @section('content')
 <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
     <div class="bg-white dark:bg-gray-800 shadow rounded-2xl overflow-hidden">
-        <div class="bg-blue-600 text-white px-6 py-4">
-            <h2 class="text-xl font-semibold">Daftar Kelas</h2>
+        <div class="bg-gray-500 text-white px-6 py-4">
+            <h1 class="text-xl font-semibold">DAFTAR KELAS</h1>
         </div>
         <div class="px-6 py-4">
             <a href="{{ route('clas.create') }}"
-               class="inline-block bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg mb-4 transition duration-300">
+                class="inline-block bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg mb-4 transition duration-300">
                 + Tambah Kelas
             </a>
             <div class="overflow-x-auto">

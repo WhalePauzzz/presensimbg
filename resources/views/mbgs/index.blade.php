@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-6">
-    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Data MBGs</h2>
+    <h1 class="text-2xl font-semibold text-gray-800 mb-4">DATA MBG</h1>
 
     <!-- Input Tanggal -->
     <div class="bg-white shadow rounded-lg mb-6 p-4">
@@ -35,34 +35,34 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100 text-sm">
                     @foreach ($classes as $class)
-                        @php
-                            $mbg = $mbgs->where('id_kelas', $class->id_kelas)->where('date', $tanggal)->first();
-                        @endphp
-                        <tr>
-                            <td class="px-4 py-2">{{ $class->kelas }}</td>
-                            <td class="px-4 py-2">{{ $mbg->total_siswa ?? 0 }}</td>
-                            <td class="px-4 py-2">{{ $mbg->total_hadir ?? 0 }}</td>
-                            <td class="px-4 py-2">
-                                <input type="checkbox" class="toggle-status rounded" data-id="{{ $mbg->id_mbg ?? 0 }}" data-field="diambil"
-                                       {{ optional($mbg)->diambil ? 'checked' : '' }}>
-                            </td>
-                            <td class="px-4 py-2">
-                                <input type="checkbox" class="toggle-status rounded" data-id="{{ $mbg->id_mbg ?? 0 }}" data-field="dikembalikan"
-                                       {{ optional($mbg)->dikembalikan ? 'checked' : '' }}>
-                            </td>
-                            <td class="px-4 py-2">
-                                @if (!empty($mbg) && $mbg->foto)
-                                    <img src="{{ asset('storage/' . $mbg->foto) }}" class="h-20 rounded shadow">
-                                @else
-                                    <span class="text-red-600 font-medium">Belum diinput</span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-2">
-                                @if (empty($mbg) || !$mbg->foto)
-                                    <a href="{{ route('mbgs.inputFoto', $mbg->id_mbg ?? 0) }}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded">Upload Foto</a>
-                                @endif
-                            </td>
-                        </tr>
+                    @php
+                        $mbg = $mbgs->where('id_kelas', $class->id)->where('date', $tanggal)->first();
+                    @endphp
+                    <tr>
+                        <td class="px-4 py-2">{{ $class->kelas }}</td>
+                        <td class="px-4 py-2">{{ $mbg->total_siswa ?? 0 }}</td>
+                        <td class="px-4 py-2">{{ $mbg->total_hadir ?? 0 }}</td>
+                        <td class="px-4 py-2">
+                            <input type="checkbox" class="toggle-status rounded" data-id="{{ $mbg->id ?? 0 }}" data-field="diambil"
+                                {{ optional($mbg)->diambil ? 'checked' : '' }}>
+                        </td>
+                        <td class="px-4 py-2">
+                            <input type="checkbox" class="toggle-status rounded" data-id="{{ $mbg->id ?? 0 }}" data-field="dikembalikan"
+                                {{ optional($mbg)->dikembalikan ? 'checked' : '' }}>
+                        </td>
+                        <td class="px-4 py-2">
+                            @if (!empty($mbg) && $mbg->foto)
+                            <img src="{{ asset('storage/' . $mbg->foto) }}" class="h-20 rounded shadow">
+                            @else
+                            <span class="text-red-600 font-medium">Belum diinput</span>
+                            @endif
+                        </td>
+                        <td class="px-4 py-2">
+                            @if (empty($mbg) || !$mbg->foto)
+                            <a href="{{ route('mbgs.inputFoto', $mbg->id ?? 0) }}" class="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded">Upload Foto</a>
+                            @endif
+                        </td>
+                    </tr>
                     @endforeach
                 </tbody>
             </table>
@@ -73,8 +73,8 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function () {
-        $('.toggle-status').change(function () {
+    $(document).ready(function() {
+        $('.toggle-status').change(function() {
             let mbgId = $(this).data('id');
             let field = $(this).data('field');
             let status = $(this).prop('checked') ? 1 : 0;
@@ -88,10 +88,10 @@
                     field: field,
                     status: status
                 },
-                success: function (response) {
+                success: function(response) {
                     console.log(response.message);
                 },
-                error: function () {
+                error: function() {
                     alert("Gagal mengupdate status!");
                 }
             });

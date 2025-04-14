@@ -4,7 +4,7 @@
     <div class="max-w-xl mx-auto mt-10 bg-white p-6 rounded-xl shadow-md">
         <h2 class="text-2xl font-semibold mb-6 text-gray-800">Upload Foto MBG</h2>
 
-        <form action="{{ route('mbgs.storeFoto', $mbg->id_mbg) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('mbgs.storeFoto', $mbg->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="mb-4">
                 <label for="foto" class="block text-gray-700 font-medium mb-1">Pilih Foto:</label>
