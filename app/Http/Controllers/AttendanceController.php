@@ -6,15 +6,28 @@ use App\Models\Attendance;
 use App\Models\Classes;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class AttendanceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $kelasList = Classes::all(); // Ambil semua kelas
-        $attendances = Attendance::with('student.classes')->latest()->get();
-        return view('attendance.index', compact('attendances', 'kelasList'));
+        if ($request->has('kelas')) {
+            $kelas = Classes::findOrFail($request->kelas);
+
+            $attendances = Attendance::with(['student', 'user'])
+                ->whereHas('student', function ($query) use ($kelas) {
+                    $query->where('id_kelas', $kelas->id);
+                })
+                ->get()
+                ->groupBy('date');
+
+            return view('attendance.show', compact('attendances', 'kelas'));
+        }
+
+        $kelasList = Classes::all();
+        return view('attendance.index', compact('kelasList'));
     }
 
     public function show($id)
@@ -23,9 +36,11 @@ class AttendanceController extends Controller
 
         $attendances = Attendance::with('student')
             ->whereHas('student', function ($query) use ($id) {
-                $query->where('id_kelas', $id); // ini karena student punya field 'id_kelas'
+                $query->where('id_kelas', $id);
             })
-            ->get();
+            ->orderBy('date', 'desc')
+            ->get()
+            ->groupBy('date'); // Kelompokkan berdasarkan tanggal
 
         return view('attendance.show', compact('kelas', 'attendances'));
     }
@@ -63,7 +78,6 @@ class AttendanceController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request->all());
 
         // Validasi input
         $request->validate([
@@ -83,9 +97,10 @@ class AttendanceController extends Controller
             $fotoIzinPath = 'noimage.png';
         
             if ($request->hasFile("attendance.$studentId.foto_izin")) {
-                $fotoIzinPath = $attendanceData['foto_izin']->storeAs(
+                $foto = $attendanceData['foto_izin'];
+                $fotoIzinPath = $foto->storeAs(
                     'attendance_photos',
-                    time() . '_' . $attendanceData['foto_izin']->getClientOriginalName(),
+                    time() . '_' . $foto->getClientOriginalName(),
                     'public'
                 );
             }
@@ -98,6 +113,7 @@ class AttendanceController extends Controller
                 [
                     'keterangan' => $attendanceData['keterangan'],
                     'foto_izin' => $fotoIzinPath,
+                    'id_user' => Auth::id(), // <- ini penting
                 ]
             );
         }        

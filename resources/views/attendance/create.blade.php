@@ -40,13 +40,16 @@
                                 <td class="border px-4 py-2">{{ $student->nm_siswa }}</td>
                                 <td class="border px-4 py-2">{{ $student->classes->kelas ?? '-' }}</td>
                                 <td class="border px-4 py-2">
+
                                     <input type="hidden" name="attendance[{{ $student->id }}][id_siswa]"
                                         value="{{ $student->id_siswa }}">
+
                                     <input type="date" name="attendance[{{ $student->id }}][date]"
                                         value="{{ date('Y-m-d') }}" class="..." required>
                                 </td>
                                 <td class="border px-4 py-2">
-                                    <select name="attendance[{{ $student->id }}][keterangan]" class="..." required onchange="togglePhotoInput(this)">
+                                    <select name="attendance[{{ $student->id }}][keterangan]" class="..." required
+                                        onchange="togglePhotoInput(this)">
                                         <option value="present" selected>Hadir</option>
                                         <option value="absent">Absen</option>
                                     </select>

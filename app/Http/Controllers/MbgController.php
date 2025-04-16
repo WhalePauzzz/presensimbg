@@ -11,14 +11,53 @@ use Illuminate\Support\Facades\Storage;
 
 class MbgController extends Controller
 {
-    public function index()
+    public function index(Request $request)
+{
+    $classes = Classes::all();
+
+    $selectedDate = $request->input('date');
+    $tanggalList = Mbg::select('date')->distinct()->orderBy('date', 'desc')->pluck('date');
+
+    $mbgQuery = Mbg::query();
+
+    if ($selectedDate) {
+        $mbgQuery->where('date', $selectedDate);
+    }
+
+    $mbgs = $mbgQuery->paginate(10); 
+
+    return view('mbgs.index', compact('classes', 'mbgs', 'tanggalList', 'selectedDate'));
+}
+
+    public function editByDate($date)
     {
         $classes = Classes::all();
-        $mbgs = Mbg::where('date', now()->toDateString())->get();
-        $tanggalList = Mbg::select('date')->distinct()->orderBy('date', 'desc')->pluck('date');
+        $mbgs = MBG::where('date', $date)->get()->keyBy('id_kelas');
 
-        return view('mbgs.index', compact('classes', 'mbgs', 'tanggalList'));
+        return view('mbgs.edit', compact('classes', 'mbgs', 'date'));
     }
+
+    public function updateByDate(Request $request)
+    {
+        foreach ($request->mbgs as $id_kelas => $data) {
+            $mbg = Mbg::where('date', $request->date)->where('id_kelas', $id_kelas)->first();
+
+            if ($mbg) {
+                $mbg->diambil = isset($data['diambil']);
+                $mbg->dikembalikan = isset($data['dikembalikan']);
+
+                if (isset($data['foto'])) {
+                    $fotoPath = $data['foto']->store('mbg_fotos', 'public');
+                    $mbg->foto = $fotoPath;
+                }
+
+                $mbg->save();
+            }
+        }
+
+        return redirect()->route('mbgs.index')->with('success', 'Data MBG berhasil diperbarui.');
+    }
+
 
     public function create()
     {
@@ -105,7 +144,7 @@ class MbgController extends Controller
         $request->validate([
             'date' => 'required|date',
         ]);
-
+        dd($request->all);
         $classes = Classes::all();
 
         foreach ($classes as $class) {

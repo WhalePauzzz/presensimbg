@@ -42,5 +42,7 @@ Route::post('/mbgs', [MbgController::class, 'store'])->name('mbgs.store');
 Route::get('/mbgs/inputFoto/{mbg}', [MbgController::class, 'inputFoto'])->name('mbgs.inputFoto');
 Route::post('/mbgs/storeFoto/{mbg}', [MbgController::class, 'storeFoto'])->name('mbgs.storeFoto');
 Route::post('/mbgs/update-status', [MbgController::class, 'updateStatus'])->name('mbgs.updateStatus');
+Route::get('/mbgs/edit/{date}', [MbgController::class, 'editByDate'])->name('mbgs.editByDate');
+Route::post('/mbgs/updateByDate', [MbgController::class, 'updateByDate'])->name('mbgs.updateByDate');
 
 require __DIR__.'/auth.php';

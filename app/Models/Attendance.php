@@ -15,6 +15,7 @@ class Attendance extends Model
 
     protected $fillable = [
         'id_siswa',
+        'id_user',
         'date',
         'keterangan',
         'foto_izin',
@@ -23,6 +24,11 @@ class Attendance extends Model
     public function student()
     {
         return $this->belongsTo(Student::class, 'id_siswa', 'id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user', 'id');
     }
 
     public function setFotoIzinAttribute($value)
