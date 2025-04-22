@@ -30,20 +30,49 @@ class AttendanceController extends Controller
         return view('attendance.index', compact('kelasList'));
     }
 
-    public function show($id)
-    {
-        $kelas = Classes::findOrFail($id);
+    public function show($id, Request $request)
+{
+    $kelas = Classes::findOrFail($id);
 
-        $attendances = Attendance::with('student')
-            ->whereHas('student', function ($query) use ($id) {
-                $query->where('id_kelas', $id);
-            })
-            ->orderBy('date', 'desc')
-            ->get()
-            ->groupBy('date'); // Kelompokkan berdasarkan tanggal
+    $query = Attendance::with(['student', 'user'])
+        ->whereHas('student', function ($q) use ($id) {
+            $q->where('id_kelas', $id);
+        });
 
-        return view('attendance.show', compact('kelas', 'attendances'));
+    if ($request->filled('tanggal')) {
+        $query->whereDate('date', $request->tanggal);
     }
+
+    $attendances = $query
+        ->orderBy('date', 'desc')
+        ->get()
+        ->groupBy('date');
+
+    // Ambil hanya 5 tanggal per halaman
+    $dates = $attendances->keys();
+    $perPage = 5;
+    $page = request()->get('page', 1);
+    $sliced = $dates->slice(($page - 1) * $perPage, $perPage);
+    
+    $paginated = collect();
+    foreach ($sliced as $date) {
+        $paginated[$date] = $attendances[$date];
+    }
+
+    $pagination = new \Illuminate\Pagination\LengthAwarePaginator(
+        $paginated,
+        $dates->count(),
+        $perPage,
+        $page,
+        ['path' => request()->url(), 'query' => request()->query()]
+    );
+
+    return view('attendance.show', [
+        'kelas' => $kelas,
+        'attendances' => $paginated,
+        'pagination' => $pagination,
+    ]);
+}
 
     public function getByClass($id)
     {

@@ -14,6 +14,26 @@
         <div class="overflow-x-auto mt-4">
             <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg">
                 <tbody class="text-gray-700 dark:text-gray-100">
+                    <form method="GET" class="mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        <div class="flex items-center gap-2">
+                            <label for="tanggal" class="text-gray-700 dark:text-gray-200 font-medium">Filter Tanggal:</label>
+                            <input type="date" name="tanggal" id="tanggal"
+                                value="{{ request('tanggal') }}"
+                                class="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-purple-500" />
+                        </div>
+                    
+                        <div class="flex gap-2">
+                            <button type="submit"
+                                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg shadow transition">
+                                Terapkan
+                            </button>
+                    
+                            <a href="{{ route('attendance.show', $kelas->id) }}"
+                                class="inline-block text-sm text-gray-600 dark:text-gray-300 hover:underline mt-1">
+                                Reset
+                            </a>
+                        </div>
+                    </form>
                     @forelse ($attendances as $date => $records)
                         <div class="bg-blue-100 dark:bg-blue-900 px-6 py-3 rounded-full mt-6">
                             <strong class="text-lg text-blue-700 dark:text-yellow-300">Tanggal: {{ $date }}</strong>
@@ -22,9 +42,10 @@
                             </div>
                         </div>
 
+                        <!-- Header tabel -->
                         <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg mt-2 mb-4">
-                            <thead>
-                                <tr class="bg-purple-100 dark:bg-purple-700 text-left text-gray-700 dark:text-gray-200">
+                            <thead class="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+                                <tr class="text-left">
                                     <th class="py-3 px-6">No</th>
                                     <th class="py-3 px-6">Nama Siswa</th>
                                     <th class="py-3 px-6">Status</th>
@@ -33,10 +54,16 @@
                             </thead>
                             <tbody>
                                 @foreach ($records as $index => $attendance)
-                                    <tr class="border-t border-gray-200 dark:border-gray-700 hover:bg-purple-50 dark:hover:bg-purple-800 transition">
+                                    <tr
+                                        class="border-b border-gray-300 hover:bg-gray-50 {{ $index % 2 == 0 ? 'bg-gray-50' : 'bg-gray-100' }}">
                                         <td class="py-3 px-6">{{ $index + 1 }}</td>
                                         <td class="py-3 px-6">{{ $attendance->student->nm_siswa }}</td>
-                                        <td class="py-3 px-6 capitalize">{{ $attendance->keterangan }}</td>
+                                        <td class="py-3 px-6 capitalize">
+                                            <span
+                                                class="px-3 py-1 rounded-full text-sm font-medium {{ $attendance->keterangan == 'hadir' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600' }}">
+                                                {{ $attendance->keterangan }}
+                                            </span>
+                                        </td>
                                         <td class="py-3 px-6">
                                             @if ($attendance->foto_izin && $attendance->foto_izin !== 'noimage.png')
                                                 <img src="{{ asset('storage/' . $attendance->foto_izin) }}"
@@ -44,7 +71,9 @@
                                                     class="w-12 h-12 object-cover rounded-full cursor-pointer hover:scale-110 transition"
                                                     alt="Foto Izin">
                                             @else
-                                                <span class="text-red-500">Tidak ada foto</span>
+                                                <span class="text-red-500 flex items-center gap-1">
+                                                    ❌ <span class="text-sm">Tidak ada foto</span>
+                                                </span>
                                             @endif
                                         </td>
                                     </tr>
@@ -54,6 +83,9 @@
                     @empty
                         <div class="text-center py-4 text-gray-500">Tidak ada data absensi</div>
                     @endforelse
+                    <div class="mt-6">
+                        {{ $pagination->links() }}
+                    </div>
                 </tbody>
             </table>
         </div>

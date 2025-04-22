@@ -39,31 +39,34 @@ class MbgController extends Controller
 
     public function updateByDate(Request $request)
     {
-        // Cegah error jika tidak ada perubahan yang dikirim
         if (!$request->has('mbgs') || empty($request->mbgs)) {
             return back()->with('error', '⚠️ Tidak ada perubahan yang disimpan. Silakan ubah minimal satu data.');
         }
 
         foreach ($request->mbgs as $id_kelas => $data) {
             $mbg = Mbg::where('date', $request->date)->where('id_kelas', $id_kelas)->first();
-        
+
             if ($mbg) {
                 $mbg->diambil = isset($data['diambil']) && $data['diambil'] == '1';
                 $mbg->dikembalikan = isset($data['dikembalikan']) && $data['dikembalikan'] == '1';
-        
-                if (isset($data['foto'])) {
+
+                // Periksa apakah file foto diupload
+                if (isset($data['foto']) && $data['foto'] instanceof \Illuminate\Http\UploadedFile) {
+                    // Hapus foto lama jika bukan default
+                    if ($mbg->foto && basename($mbg->foto) !== 'noimage.png') {
+                        Storage::disk('public')->delete($mbg->foto);
+                    }
+
                     $fotoPath = $data['foto']->store('mbg_fotos', 'public');
                     $mbg->foto = $fotoPath;
                 }
-        
+
                 $mbg->save();
             }
-        }        
+        }
 
         return redirect()->route('mbgs.index')->with('success', '✅ Data MBG berhasil diperbarui.');
     }
-
-
 
     public function create()
     {
