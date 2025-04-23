@@ -60,21 +60,23 @@
                 </tbody>
             </table>
         </div>
-
-        <div class="mt-8 text-right">
-            <a href="{{ route('mbgs.index') }}" class="text-blue-600 hover:underline font-medium text-lg">
+        <div class="mt-8 flex justify-end gap-4 flex-wrap">
+            <button type="button"
+                onclick="window.location.href='{{ route('mbgs.index') }}'"
+                class="bg-white text-blue-700 border border-blue-500 hover:bg-blue-50 px-6 py-3 rounded-lg text-lg font-medium shadow">
                 ⬅️ Kembali ke Index
-            </a>
-            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg shadow-xl text-lg font-semibold">
+            </button>
+            <button type="submit"
+                class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg shadow-xl text-lg font-semibold">
                 💾 Simpan Perubahan
             </button>
         </div>
     </form>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form');
 
-            form.addEventListener('submit', function (e) {
+            form.addEventListener('submit', function(e) {
                 let hasChanges = false;
 
                 const checkboxes = form.querySelectorAll('input[type="checkbox"]');

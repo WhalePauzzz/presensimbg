@@ -14,6 +14,8 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [StudentController::class, 'index'])->name('dashboard');
+
+    Route::get('/classes', [ClassesController::class, 'index'])->name('clas.index');
 });
 
 Route::middleware('auth')->group(function () {
@@ -53,7 +55,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/students/{id}', [StudentController::class, 'show'])->name('students.show');
 
 
-        Route::get('/classes', [ClassesController::class, 'index'])->name('clas.index');
+        
         Route::get('/classes/create', [ClassesController::class, 'create'])->name('clas.create');
         Route::post('/classes', [ClassesController::class, 'store'])->name('clas.store');
     });
