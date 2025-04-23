@@ -5,7 +5,7 @@
         <div
             class="bg-gradient-to-br from-pink-100 via-yellow-100 to-blue-100 dark:bg-gradient-to-br dark:from-pink-900 dark:via-yellow-900 dark:to-blue-900 shadow-xl rounded-2xl overflow-hidden">
             <div class="bg-pink-500 text-white px-6 py-4 rounded-t-2xl">
-                <h1 class="text-2xl font-semibold">👤 Tambah Pengguna</h1>
+                <h1 class="text-2xl font-semibold">👤 Tambah Guru</h1>
             </div>
             <form action="{{ route('user.store') }}" method="POST" class="px-6 py-6 space-y-6">
                 @csrf
@@ -38,12 +38,10 @@
                 <!-- Role -->
                 <div>
                     <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Role</label>
-                    <select name="role" id="role"
-                        class="mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm bg-white dark:bg-gray-700 dark:text-white dark:border-gray-600 focus:ring-purple-500 focus:border-purple-500"
-                        required>
-                        <option value="guru" selected>Guru</option>
-                        <option value="admin">Admin</option>
-                    </select>
+                    <input type="text" id="role" value="Guru"
+                        class="mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm bg-gray-100 dark:bg-gray-700 dark:text-white dark:border-gray-600 cursor-not-allowed"
+                        readonly>
+                    <input type="hidden" name="role" value="guru">
                 </div>
 
                 <!-- Submit -->

@@ -22,8 +22,9 @@ class AttendanceController extends Controller
                 })
                 ->get()
                 ->groupBy('date');
+            $pagination = null;
 
-            return view('attendance.show', compact('attendances', 'kelas'));
+            return view('attendance.show', compact('attendances', 'kelas', 'pagination'));
         }
 
         $kelasList = Classes::all();

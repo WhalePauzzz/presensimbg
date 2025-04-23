@@ -12,12 +12,6 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [StudentController::class, 'index'])->name('dashboard');
-
-    Route::get('/classes', [ClassesController::class, 'index'])->name('clas.index');
-});
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -25,6 +19,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [StudentController::class, 'index'])->name('dashboard');
+    Route::get('/classes', [ClassesController::class, 'index'])->name('clas.index');
+    Route::get('/students/{id}', [StudentController::class, 'show'])->name('students.show');
+
     Route::middleware(['auth', 'role:guru'])->group(function () {
         Route::get('/mbgs', [MbgController::class, 'index'])->name('mbgs.index');
         Route::get('/mbgs/create', [MbgController::class, 'create'])->name('mbgs.create');
@@ -44,18 +42,15 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::middleware(['auth', 'role:admin'])->group(function () {
+        Route::get('/create/siswa', [StudentController::class, 'create'])->name('students.create');
+        Route::post('/students/store', [StudentController::class, 'store'])->name('students.store');
+        
         Route::get('/user', [UserController::class, 'index'])->name('user.index');
         Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
         Route::post('/user', [UserController::class, 'store'])->name('user.store');
         Route::post('/user/edit', [UserController::class, 'edit'])->name('user.edit');
         Route::post('/user/destroy', [UserController::class, 'destroy'])->name('user.destroy');
 
-        Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
-        Route::post('/students/store', [StudentController::class, 'store'])->name('students.store');
-        Route::get('/students/{id}', [StudentController::class, 'show'])->name('students.show');
-
-
-        
         Route::get('/classes/create', [ClassesController::class, 'create'])->name('clas.create');
         Route::post('/classes', [ClassesController::class, 'store'])->name('clas.store');
     });
