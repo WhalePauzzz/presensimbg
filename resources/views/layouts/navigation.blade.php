@@ -34,12 +34,12 @@
 
             <div class="pt-4 pb-4 px-4 border-t border-pink-200 dark:border-pink-700 mt-auto">
                 @if (auth()->check())
-                    <div class="text-sm">
-                        <div class="font-bold text-pink-700 dark:text-pink-300">👤 {{ Auth::user()->name }}</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-300">{{ Auth::user()->email }}</div>
-                    </div>
+                <div class="text-sm">
+                    <div class="font-bold text-pink-700 dark:text-pink-300">👤 {{ Auth::user()->name }}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-300">{{ Auth::user()->email }}</div>
+                </div>
                 @else
-                    <div class="font-bold">Guest</div>
+                <div class="font-bold">Guest</div>
                 @endif
 
                 <div class="mt-4 space-y-2">

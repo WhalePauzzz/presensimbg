@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-    <div
-        class="max-w-7xl mx-auto px-4 py-8 bg-gradient-to-r from-teal-100 via-yellow-100 to-pink-100 min-h-screen rounded-lg shadow-lg">
-        <h1 class="text-3xl font-bold text-pink-700 mb-6">📚 DATA MBG</h1>
+<div
+    class="max-w-7xl mx-auto px-4 py-8 bg-gradient-to-r from-teal-100 via-yellow-100 to-pink-100 min-h-screen rounded-lg shadow-lg">
+    <h1 class="text-3xl font-bold text-pink-700 mb-6">📚 DATA MBG</h1>
 
         <!-- Input & Filter Tanggal -->
         <div class="flex flex-col md:flex-row gap-6 mb-6">
@@ -128,10 +128,10 @@
         @endforeach
 
 
-        <!-- Pagination -->
-        <div class="mt-6">
-            {{ $mbgs->appends(['date' => $selectedDate])->links() }}
-        </div>
+    <!-- Pagination -->
+    <div class="mt-6">
+        {{ $mbgs->appends(['date' => $selectedDate])->links() }}
+    </div>
 
         <!-- Modal -->
         <!-- Modal -->
@@ -149,25 +149,25 @@
 
 
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-            $(document).ready(function() {
-                $('img[data-image]').click(function() {
-                    var imageSrc = $(this).data('image');
-                    console.log("Klik gambar: ", imageSrc); // Cek apakah URL keluar di console
-                    $('#modal-image').attr('src', imageSrc);
-                    $('#modal').removeClass('hidden');
-                });
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('img[data-image]').click(function() {
+                var imageSrc = $(this).data('image');
+                console.log("Klik gambar: ", imageSrc); // Cek apakah URL keluar di console
+                $('#modal-image').attr('src', imageSrc);
+                $('#modal').removeClass('hidden');
+            });
 
-                $('#close-modal').click(function() {
+            $('#close-modal').click(function() {
+                $('#modal').addClass('hidden');
+            });
+
+            $('#modal').click(function(event) {
+                if ($(event.target).is('#modal')) {
                     $('#modal').addClass('hidden');
-                });
-
-                $('#modal').click(function(event) {
-                    if ($(event.target).is('#modal')) {
-                        $('#modal').addClass('hidden');
-                    }
-                });
+                }
+            });
 
                 $('.readonly-checkbox').on('click', function(e) {
                     e.preventDefault();
@@ -177,14 +177,14 @@
             });
 
 
-            function closeModal() {
-                $('#modal').addClass('hidden');
-            }
+        function closeModal() {
+            $('#modal').addClass('hidden');
+        }
 
-            function showImageModal(src) {
-                $('#modal-image').attr('src', src);
-                $('#modal').removeClass('hidden');
-            }
-        </script>
-    </div>
+        function showImageModal(src) {
+            $('#modal-image').attr('src', src);
+            $('#modal').removeClass('hidden');
+        }
+    </script>
+</div>
 @endsection
