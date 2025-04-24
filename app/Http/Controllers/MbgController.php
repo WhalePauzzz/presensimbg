@@ -12,22 +12,22 @@ use Illuminate\Support\Facades\Storage;
 class MbgController extends Controller
 {
     public function index(Request $request)
-{
-    $classes = Classes::all();
+    {
+        $classes = Classes::all();
 
-    $selectedDate = $request->input('date');
-    $tanggalList = Mbg::select('date')->distinct()->orderBy('date', 'desc')->pluck('date');
+        $selectedDate = $request->input('date');
+        
+        $tanggalList = Mbg::select('date')->distinct()->orderBy('date', 'desc')->pluck('date');
+        $mbgQuery = Mbg::query();
 
-    $mbgQuery = Mbg::query();
+        if ($selectedDate) {
+            $mbgQuery->whereDate('date', $selectedDate);
+        }
 
-    if ($selectedDate) {
-        $mbgQuery->where('date', $selectedDate);
+        $mbgs = $mbgQuery->paginate(10);
+
+        return view('mbgs.index', compact('classes', 'mbgs', 'tanggalList', 'selectedDate'));
     }
-
-    $mbgs = $mbgQuery->paginate(10); 
-
-    return view('mbgs.index', compact('classes', 'mbgs', 'tanggalList', 'selectedDate'));
-}
 
     public function editByDate($date)
     {
@@ -60,7 +60,7 @@ class MbgController extends Controller
                     $fotoPath = $data['foto']->store('mbg_fotos', 'public');
                     $mbg->foto = $fotoPath;
                 }
-
+                $mbg->keteranganmbg = $data['keteranganmbg'] ?? '';
                 $mbg->save();
             }
         }

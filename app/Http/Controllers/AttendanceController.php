@@ -22,8 +22,9 @@ class AttendanceController extends Controller
                 })
                 ->get()
                 ->groupBy('date');
+            $pagination = null;
 
-            return view('attendance.show', compact('attendances', 'kelas'));
+            return view('attendance.show', compact('attendances', 'kelas', 'pagination'));
         }
 
         $kelasList = Classes::all();
@@ -89,16 +90,28 @@ class AttendanceController extends Controller
     {
         $kelasList = Classes::all();
         $students = [];
+        $absensiSudahAda = false;
 
         if ($request->has('kelas') && $request->kelas != '') {
             $students = Student::where('id_kelas', $request->kelas)->get();
+
+            $today = now()->toDateString();
+            $sudahAda = Attendance::whereDate('date', $today)
+                ->whereHas('student', function ($query) use ($request) {
+                    $query->where('id_kelas', $request->kelas);
+                })
+                ->exists();
+
+            $absensiSudahAda = $sudahAda;
         }
-        
+
         return view('attendance.create', [
             'kelasList' => $kelasList,
             'students' => $students,
+            'absensiSudahAda' => $absensiSudahAda,
         ]);
     }
+
     public function getStudentsByClass($id_kelas)
     {
         $students = Student::where('id_kelas', $id_kelas)->get();

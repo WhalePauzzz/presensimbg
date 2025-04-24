@@ -10,9 +10,10 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::paginate(10);
+        $users = User::where('role', 'guru')->paginate(10);
         return view('user.index', compact('users'));
     }
+
 
     public function create()
     {

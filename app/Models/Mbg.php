@@ -13,7 +13,7 @@ class Mbg extends Model
     protected $primaryKey = 'id';
     protected $fillable = [
         'id_kelas', 'date', 'foto', 'total_hadir', 
-        'diambil', 'dikembalikan', 'total_siswa'
+        'diambil', 'dikembalikan', 'total_siswa', 'keteranganmbg'
     ];
 
     public function Classes()

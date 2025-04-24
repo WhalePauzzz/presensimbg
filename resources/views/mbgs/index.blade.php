@@ -8,50 +8,61 @@
         <!-- Input & Filter Tanggal -->
         <div class="flex flex-col md:flex-row gap-6 mb-6">
             <!-- Input Tanggal -->
+            @php
+                $today = date('Y-m-d');
+            @endphp
             <div class="bg-white shadow-lg rounded-lg p-6 flex-1">
                 <h5 class="text-xl font-medium text-gray-700 mb-4">🗓️ Input Tanggal</h5>
                 <form action="{{ route('mbgs.storeDate') }}" method="POST" class="flex items-center space-x-6 flex-wrap">
                     @csrf
-                    <input type="date" name="date" class="border rounded-lg px-4 py-2 w-60 text-lg" required>
+                    <input type="date" name="date" value="{{ $today }}" min="{{ $today }}"
+                        max="{{ $today }}" class="border rounded-lg px-4 py-2 w-60 text-lg" required>
                     <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full shadow-md transition transform hover:scale-105 text-lg font-semibold">
-                        💾 Simpan
-                    </button>
-                </form>
-            </div>
-
-            <!-- Filter Tanggal -->
-            <div class="bg-white shadow-lg rounded-lg p-6 flex-1">
-                <h5 class="text-xl font-medium text-gray-700 mb-4">📅 Filter Tanggal</h5>
-                <form method="GET" action="{{ route('mbgs.index') }}" class="flex items-center space-x-6 flex-wrap">
-                    <label for="date" class="font-medium text-lg">Tanggal:</label>
-                    <select name="date" id="date" class="border rounded px-4 py-2 text-lg">
-                        @foreach ($tanggalList as $tgl)
-                            <option value="{{ $tgl }}" {{ $selectedDate == $tgl ? 'selected' : '' }}>
-                                {{ $tgl }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full shadow-md transition transform hover:scale-105 text-lg">
-                        🔍 Filter
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full shadow-md transition transform hover:scale-105 text-lg font-semibold mt-4 md:mt-0">
+                        Simpan
                     </button>
                 </form>
             </div>
         </div>
 
+        {{-- filter tanggal --}}
+        <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
+            <h5 class="text-xl font-medium text-gray-700 mb-4">📅 Filter Tanggal</h5>
+            <form method="GET" action="{{ route('mbgs.index') }}" class="flex items-center space-x-6 flex-wrap"
+                id="filter-form">
+                <select name="date" id="date" class="border rounded px-4 py-2 text-lg">
+                    <option value="">-- Pilih Tanggal --</option>
+                    @foreach ($tanggalList as $tgl)
+                        <option value="{{ $tgl }}" {{ $selectedDate == $tgl ? 'selected' : '' }}>
+                            {{ $tgl }}
+                        </option>
+                    @endforeach
+                </select>
+                <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full shadow-md transition transform hover:scale-105 text-lg font-semibold mt-4 md:mt-0">
+                    Filter
+                </button>
+                @if ($selectedDate)
+                    <a href="{{ route('mbgs.index') }}"
+                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-full shadow-md transition transform hover:scale-105 text-lg font-semibold mt-4 md:mt-0">
+                        Reset
+                    </a>
+                @endif
+            </form>
+        </div>
 
         <!-- MBG List per Tanggal -->
         @foreach ($tanggalList as $tanggal)
             <div class="bg-white shadow-lg rounded-lg mb-8">
                 <div class="bg-gray-200 px-6 py-4 rounded-t-lg flex justify-between items-center">
-                    <h5 class="text-lg font-semibold text-gray-800">📅 Tanggal: {{ $tanggal }}</h5>
+                    <h5 class="text-lg font-semibold text-gray-800">📅 Tanggal {{ $tanggal }}</h5>
                     <a href="{{ route('mbgs.editByDate', ['date' => $tanggal]) }}"
                         class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm px-6 py-3 rounded-full shadow-md">
-                        ✏️ Edit
+                        Edit
                     </a>
                 </div>
 
+                <!-- Tambahkan div untuk scroll horizontal di mode mobile -->
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 text-center">
                         <thead class="bg-gray-100 text-sm font-medium text-gray-700">
@@ -62,6 +73,7 @@
                                 <th>Diambil</th>
                                 <th>Dikembalikan</th>
                                 <th>Foto</th>
+                                <th>Keterangan</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,8 +81,9 @@
                                 @php
                                     $mbg = $mbgs->where('id_kelas', $class->id)->where('date', $tanggal)->first();
                                 @endphp
-                                <tr class="{{ $loop->even ? 'bg-yellow-50' : 'bg-pink-50' }} hover:bg-green-100 transition">
-                                    <td class="px-4 py-3 font-semibold text-blue-700 text-lg">🏫 {{ $class->kelas }}</td>
+                                <tr
+                                    class="{{ $loop->even ? 'bg-yellow-50' : 'bg-pink-50' }} hover:bg-green-100 transition">
+                                    <td class="px-4 py-3 font-semibold text-blue-700 text-lg">{{ $class->kelas }}</td>
                                     <td class="px-4 py-3 text-lg text-purple-700">{{ $mbg->total_siswa ?? '❓' }}</td>
                                     <td class="px-4 py-3 text-lg text-green-700 font-bold">
                                         {{ $mbg->total_hadir ?? '0' }}
@@ -98,6 +111,14 @@
                                             </div>
                                         @endif
                                     </td>
+                                    <td class="px-4 py-3">
+                                        @if (!empty($mbg))
+                                            <textarea readonly rows="2" class="w-full border rounded p-2 bg-gray-100 text-sm text-gray-800 cursor-not-allowed"
+                                                onclick="alert('Silakan edit melalui tombol Edit tanggal.')">{{ $mbg->keteranganmbg ?? '-' }}</textarea>
+                                        @else
+                                            <span class="text-gray-400 italic">-</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -106,19 +127,25 @@
             </div>
         @endforeach
 
+
         <!-- Pagination -->
         <div class="mt-6">
             {{ $mbgs->appends(['date' => $selectedDate])->links() }}
         </div>
 
         <!-- Modal -->
-        <div id="modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-[9999] hidden">
-            <div class="bg-white p-6 rounded-lg shadow-lg relative inline-block">
-                <img id="modal-image" src="" alt="Foto MBG" class="rounded-lg shadow-md border-4 border-pink-400">
-                <!-- Tombol close -->
-                <button id="close-modal" class="absolute top-2 right-2 text-red-600 text-3xl font-bold">&times;</button>
+        <!-- Modal -->
+        <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] hidden">
+            <div class="relative">
+                <img id="modal-image" src="" alt="Foto MBG"
+                    class="rounded-lg shadow-lg border-4 border-pink-400 max-w-[90vw] max-h-[90vh]">
+                <button id="close-modal"
+                    class="absolute -top-3 -right-3 bg-white border border-gray-300 rounded-full text-red-600 w-8 h-8 flex items-center justify-center text-xl shadow hover:bg-red-100">
+                    &times;
+                </button>
             </div>
         </div>
+
 
 
 
@@ -146,7 +173,9 @@
                     e.preventDefault();
                     alert("Silakan edit melalui tombol Edit tanggal.");
                 });
+
             });
+
 
             function closeModal() {
                 $('#modal').addClass('hidden');

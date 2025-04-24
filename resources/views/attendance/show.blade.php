@@ -16,22 +16,25 @@
                 <tbody class="text-gray-700 dark:text-gray-100">
                     <form method="GET" class="mb-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
                         <div class="flex items-center gap-2">
-                            <label for="tanggal" class="text-gray-700 dark:text-gray-200 font-medium">Filter Tanggal:</label>
-                            <input type="date" name="tanggal" id="tanggal"
-                                value="{{ request('tanggal') }}"
+                            <label for="tanggal" class="text-gray-700 dark:text-gray-200 font-medium">Filter
+                                Tanggal:</label>
+                            <input type="date" name="tanggal" id="tanggal" value="{{ request('tanggal') }}"
                                 class="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-purple-500" />
                         </div>
-                    
-                        <div class="flex gap-2">
+
+                        <div class="flex gap-2 mt-2">
                             <button type="submit"
                                 class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg shadow transition">
                                 Terapkan
                             </button>
-                    
-                            <a href="{{ route('attendance.show', $kelas->id) }}"
-                                class="inline-block text-sm text-gray-600 dark:text-gray-300 hover:underline mt-1">
-                                Reset
-                            </a>
+
+                            <button type="submit"
+                                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg shadow transition">
+                                <a href="{{ route('attendance.show', $kelas->id) }}">
+                                    Reset
+                                </a>
+                            </button>
+
                         </div>
                     </form>
                     @forelse ($attendances as $date => $records)
@@ -60,7 +63,7 @@
                                         <td class="py-3 px-6">{{ $attendance->student->nm_siswa }}</td>
                                         <td class="py-3 px-6 capitalize">
                                             <span
-                                                class="px-3 py-1 rounded-full text-sm font-medium {{ $attendance->keterangan == 'hadir' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600' }}">
+                                                class="px-3 py-1 rounded-full text-sm font-medium {{ $attendance->keterangan == 'present' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600' }}">
                                                 {{ $attendance->keterangan }}
                                             </span>
                                         </td>
@@ -83,9 +86,11 @@
                     @empty
                         <div class="text-center py-4 text-gray-500">Tidak ada data absensi</div>
                     @endforelse
-                    <div class="mt-6">
-                        {{ $pagination->links() }}
-                    </div>
+                    @if ($pagination)
+                        <div class="mt-4">
+                            {{ $pagination->links() }}
+                        </div>
+                    @endif
                 </tbody>
             </table>
         </div>

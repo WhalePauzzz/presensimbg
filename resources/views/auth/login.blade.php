@@ -35,14 +35,6 @@
                 </label>
             </div>
 
-            <!-- Link ke Register -->
-            <div class="flex mt-4 text-sm justify-center text-gray-700">
-                <span>Belum punya akun?</span>
-                <a href="{{ route('register') }}" class="ml-1 underline text-blue-600 hover:text-blue-800 font-semibold">
-                    Daftar Sekarang
-                </a>
-            </div>
-
             <!-- Submit & Lupa Password -->
             <div class="flex items-center justify-between mt-6">
                 @if (Route::has('password.request'))

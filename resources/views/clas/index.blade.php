@@ -7,10 +7,12 @@
             <h1 class="text-2xl font-semibold">📚 DAFTAR KELAS</h1>
         </div>
         <div class="px-6 py-4">
+            @if(auth()->user()->role === 'admin')
             <a href="{{ route('clas.create') }}"
                 class="inline-block bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-2 px-6 rounded-lg mb-4 transition duration-300 transform hover:scale-105">
                 + Tambah Kelas
             </a>
+            @endif
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl">
                     <thead class="bg-pink-200 dark:bg-pink-700 text-gray-700 dark:text-white text-sm uppercase rounded-t-xl">

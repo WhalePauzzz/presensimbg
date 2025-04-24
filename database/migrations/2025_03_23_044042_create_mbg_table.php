@@ -19,6 +19,7 @@ return new class extends Migration
             $table->boolean('diambil')->default(false);
             $table->boolean('dikembalikan')->default(false);
             $table->integer('total_siswa')->default(0);
+            $table->text('keteranganmbg');
             $table->timestamps();
             $table->foreignId('id_kelas')->constrained('classes')->onDelete('cascade');
         });

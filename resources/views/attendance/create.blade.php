@@ -8,7 +8,9 @@
         <form method="GET" class="mb-6" action="{{ route('attendance.create') }}">
             <div class="mb-4">
                 <label for="filter_kelas" class="block text-lg font-medium text-gray-700 mb-2">Pilih Kelas</label>
-                <select name="kelas" id="filter_kelas" class="w-full p-3 border-2 border-pink-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" onchange="this.form.submit()">
+                <select name="kelas" id="filter_kelas"
+                    class="w-full p-3 border-2 border-pink-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    onchange="this.form.submit()">
                     <option value="">-- Pilih Kelas --</option>
                     @foreach ($kelasList as $kelas)
                         <option value="{{ $kelas->id }}" {{ request('kelas') == $kelas->id ? 'selected' : '' }}>
@@ -20,6 +22,12 @@
         </form>
 
         @if (!empty($students) && count($students) > 0)
+            @if ($absensiSudahAda)
+                <div class="mb-6 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-lg">
+                    <strong>Perhatian!</strong> Absensi untuk kelas ini pada hari ini sudah diinput sebelumnya.
+                </div>
+            @endif
+
             <form action="{{ route('attendance.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="kelas" value="{{ request('kelas') }}">
@@ -40,17 +48,29 @@
                                 <td class="border px-4 py-3">{{ $student->nm_siswa }}</td>
                                 <td class="border px-4 py-3">{{ $student->classes->kelas ?? '-' }}</td>
                                 <td class="border px-4 py-3">
-                                    <input type="hidden" name="attendance[{{ $student->id }}][id_siswa]" value="{{ $student->id_siswa }}">
-                                    <input type="date" name="attendance[{{ $student->id }}][date]" value="{{ date('Y-m-d') }}" class="w-full p-3 border-2 border-pink-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" required>
+                                    <input type="hidden" name="attendance[{{ $student->id }}][id_siswa]"
+                                        value="{{ $student->id_siswa }}">
+                                    @php
+                                        $today = date('Y-m-d');
+                                    @endphp
+                                    <input type="date" name="attendance[{{ $student->id }}][date]"
+                                        value="{{ $today }}" min="{{ $today }}" max="{{ $today }}"
+                                        class="w-full p-3 border-2 border-pink-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                                        required>
+
                                 </td>
                                 <td class="border px-4 py-3">
-                                    <select name="attendance[{{ $student->id }}][keterangan]" class="w-full p-3 border-2 border-pink-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" required onchange="togglePhotoInput(this)">
+                                    <select name="attendance[{{ $student->id }}][keterangan]"
+                                        class="w-full p-3 border-2 border-pink-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                                        required onchange="togglePhotoInput(this)">
                                         <option value="present" selected>Hadir</option>
                                         <option value="absent">Absen</option>
                                     </select>
                                 </td>
                                 <td class="border px-4 py-3">
-                                    <input type="file" name="attendance[{{ $student->id }}][foto_izin]" class="w-full border-2 border-pink-300 rounded-lg px-2 py-1 mt-1 attendance-photo" disabled>
+                                    <input type="file" name="attendance[{{ $student->id }}][foto_izin]"
+                                        class="w-full border-2 border-pink-300 rounded-lg px-2 py-1 mt-1 attendance-photo"
+                                        disabled>
                                 </td>
                             </tr>
                         @endforeach
@@ -58,7 +78,8 @@
                 </table>
 
                 <div class="mt-6 flex justify-center">
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition-colors">
+                    <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition-colors">
                         Simpan Absensi
                     </button>
                 </div>

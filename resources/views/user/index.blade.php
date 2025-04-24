@@ -5,7 +5,7 @@
         <div
             class="bg-gradient-to-br from-pink-100 via-yellow-100 to-blue-100 dark:from-pink-900 dark:via-yellow-900 dark:to-blue-900 shadow-xl rounded-2xl overflow-hidden">
             <div class="bg-pink-500 text-white px-6 py-4 rounded-t-2xl">
-                <h1 class="text-2xl font-semibold">👤 DAFTAR PENGGUNA</h1>
+                <h1 class="text-2xl font-semibold">👤 DAFTAR GURU</h1>
             </div>
 
             <div class="px-6 py-4">
