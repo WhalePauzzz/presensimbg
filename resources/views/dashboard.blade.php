@@ -4,7 +4,7 @@
     <div
         class="max-w-6xl mx-auto px-4 py-8 bg-gradient-to-br from-blue-100 via-pink-100 to-yellow-100 min-h-screen rounded-xl shadow-inner">
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
-            <h1 class="text-4xl font-bold text-pink-700 flex items-center gap-2">
+            <h1 class="text-7xl font-bold text-pink-700 flex items-center gap-2">
                 Daftar Siswa
             </h1>
             @if (auth()->user()->role === 'admin')

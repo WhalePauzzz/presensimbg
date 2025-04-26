@@ -16,7 +16,7 @@ class MbgController extends Controller
         $classes = Classes::all();
 
         $selectedDate = $request->input('date');
-        
+
         $tanggalList = Mbg::select('date')->distinct()->orderBy('date', 'desc')->pluck('date');
         $mbgQuery = Mbg::query();
 
@@ -26,8 +26,28 @@ class MbgController extends Controller
 
         $mbgs = $mbgQuery->paginate(10);
 
-        return view('mbgs.index', compact('classes', 'mbgs', 'tanggalList', 'selectedDate'));
+        $allMbgs = Mbg::get()->groupBy(['date', 'id_kelas']);
+
+        $mbgs = $this->getFilteredMbgs([
+            'date' => $selectedDate,
+        ]);
+
+        $allMbgs = Mbg::get()->groupBy(['date', 'id_kelas']);
+
+        return view('mbgs.index', compact('classes', 'mbgs', 'tanggalList', 'selectedDate', 'allMbgs'));
     }
+
+    private function getFilteredMbgs($filters = [])
+    {
+        $query = Mbg::query();
+
+        if (!empty($filters['date'])) {
+            $query->whereDate('date', $filters['date']);
+
+            return $query->paginate(10);
+        }
+    }
+
 
     public function editByDate($date)
     {

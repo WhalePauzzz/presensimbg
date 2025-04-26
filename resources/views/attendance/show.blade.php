@@ -96,7 +96,7 @@
         </div>
 
         <!-- Modal -->
-        <div id="modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+        <div id="modal" class="fixed inset-0 bg-black bg-opacity-70  items-center justify-center z-50 hidden">
             <div class="bg-white p-4 rounded-xl shadow-xl relative max-w-lg w-full">
                 <button onclick="closeModal()"
                     class="absolute top-2 right-2 text-gray-500 hover:text-black text-xl font-semibold">&times;</button>

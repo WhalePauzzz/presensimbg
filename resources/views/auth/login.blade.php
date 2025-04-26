@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="w-full max-w-md mx-auto mt-10 p-8 bg-gradient-to-br from-pink-100 to-yellow-100 rounded-2xl shadow-xl border border-pink-200">
         <h2 class="text-3xl font-bold text-center text-blue-700 mb-6 flex items-center justify-center gap-2">
-            🎈 Masuk Akun
+            Masuk Akun
         </h2>
 
         <!-- Session Status -->
